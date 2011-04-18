@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Copyright 2011 SMARTJOG * TV-RADIO.
+ * Licensed under the MIT License (see LICENSE.txt)
+-->
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="115" height="65">
+	
+	<mx:Script>
+		<![CDATA[
+					
+			import mx.core.Application;
+			import com.tvradio.audio.event.SoundEvent;
+			
+			private function toggleSound(value:String):void {								
+				parent.dispatchEvent(new SoundEvent(SoundEvent.TOGGLE_VOLUME,value));
+			}
+			private function changeVolume(value:String):void {								
+				parent.dispatchEvent(new SoundEvent(SoundEvent.CHANGE_VOLUME,value));
+			}
+			
+			public function onSoundVolumeHandler(evt:SoundEvent):void {
+				
+				if(evt.arg!=null){
+					trace("volume : "+evt.arg);
+					switch (evt.arg){
+						case "0" :
+						    this.mutebutton.visible = true;
+						    this.soundbutton.visible = false;
+							this.volume_1.visible = false;
+							this.volume_2.visible = false;
+							this.volume_3.visible = false;
+							this.volume_4.visible = false;
+							this.volume_5.visible = false;
+							this.volume_6.visible = false;
+							this.volume_1Off.visible = true;
+							this.volume_2Off.visible = true;
+							this.volume_3Off.visible = true;
+							this.volume_4Off.visible = true;
+							this.volume_5Off.visible = true;
+							this.volume_6Off.visible = true;
+							break;
+						case "0.2" :
+							this.mutebutton.visible = false;
+						    this.soundbutton.visible = true;
+							this.volume_1.visible = true;
+							this.volume_2.visible = false;
+							this.volume_3.visible = false;
+							this.volume_4.visible = false;
+							this.volume_5.visible = false;
+							this.volume_6.visible = false;
+							this.volume_1Off.visible = false;
+							this.volume_2Off.visible = true;
+							this.volume_3Off.visible = true;
+							this.volume_4Off.visible = true;
+							this.volume_5Off.visible = true;
+							this.volume_6Off.visible = true;
+							break;	
+						case "0.4" :
+							this.mutebutton.visible = false;
+						    this.soundbutton.visible = true;
+							this.volume_1.visible = true;
+							this.volume_2.visible = true;
+							this.volume_3.visible = false;
+							this.volume_4.visible = false;
+							this.volume_5.visible = false;
+							this.volume_6.visible = false;
+							this.volume_1Off.visible = false;
+							this.volume_2Off.visible = false;
+							this.volume_3Off.visible = true;
+							this.volume_4Off.visible = true;
+							this.volume_5Off.visible = true;
+							this.volume_6Off.visible = true;
+							break;	
+						case "0.5" :
+							this.mutebutton.visible = false;
+						    this.soundbutton.visible = true;
+							this.volume_1.visible = true;
+							this.volume_2.visible = true;
+							this.volume_3.visible = true;
+							this.volume_4.visible = false;
+							this.volume_5.visible = false;
+							this.volume_6.visible = false;
+							this.volume_1Off.visible = false;
+							this.volume_2Off.visible = false;
+							this.volume_3Off.visible = false;
+							this.volume_4Off.visible = true;
+							this.volume_5Off.visible = true;
+							this.volume_6Off.visible = true;
+							break;	
+						case "0.6" :
+							this.mutebutton.visible = false;
+						    this.soundbutton.visible = true;
+							this.volume_1.visible = true;
+							this.volume_2.visible = true;
+							this.volume_3.visible = true;
+							this.volume_4.visible = true;
+							this.volume_5.visible = false;
+							this.volume_6.visible = false;
+							this.volume_1Off.visible = false;
+							this.volume_2Off.visible = false;
+							this.volume_3Off.visible = false;
+							this.volume_4Off.visible = false;
+							this.volume_5Off.visible = true;
+							this.volume_6Off.visible = true;
+							break;
+						case "0.8" :		
+							this.mutebutton.visible = false;
+						    this.soundbutton.visible = true;
+							this.volume_1.visible = true;
+							this.volume_2.visible = true;
+							this.volume_3.visible = true;
+							this.volume_4.visible = true;
+							this.volume_5.visible = true;
+							this.volume_6.visible = false;
+							this.volume_1Off.visible = false;
+							this.volume_2Off.visible = false;
+							this.volume_3Off.visible = false;
+							this.volume_4Off.visible = false;
+							this.volume_5Off.visible = false;
+							this.volume_6Off.visible = true;
+							break;
+						case "1" :		
+							this.mutebutton.visible = false;
+						    this.soundbutton.visible = true;
+							this.volume_1.visible = true;
+							this.volume_2.visible = true;
+							this.volume_3.visible = true;
+							this.volume_4.visible = true;
+							this.volume_5.visible = true;
+							this.volume_6.visible = true;
+							this.volume_1Off.visible = false;
+							this.volume_2Off.visible = false;
+							this.volume_3Off.visible = false;
+							this.volume_4Off.visible = false;
+							this.volume_5Off.visible = false;
+							this.volume_6Off.visible = false;
+							break;	
+												
+					}
+					
+					
+				}				
+				
+				
+			}
+		]]>
+	</mx:Script>
+		
+	<mx:Image x="4" y="5" source="assets/skins/bgbouttonset.png"/>
+	<mx:Image id="mutebutton" source="@Embed(source='assets/skins/audioskin.swf', symbol='Volumegraphmute')" x="60" y="30" visible="false" useHandCursor="true" buttonMode="true" click="toggleSound('sound')" toolTip="Son" />
+	<mx:Image id="soundbutton" source="@Embed(source='assets/skins/audioskin.swf', symbol='Volumegraph')" x="60" y="30" visible="false" useHandCursor="true" buttonMode="true" click="toggleSound('mute')" toolTip="Couper le son" />
+	<mx:Image source="@Embed(source='assets/skins/audioskin.swf', symbol='VolumeLevel0')" x="70" y="40" />
+	<mx:Image id="volume_1" source="@Embed(source='assets/skins/audioskin.swf', symbol='VolumeLevel1')" x="70" y="40" click="{changeVolume('20')}" visible="false" useHandCursor="true" buttonMode="true" />
+	<mx:Image id="volume_1Off" source="@Embed(source='assets/skins/audioskin.swf', symbol='VolumeLevel1OFF')" x="70" y="40" click="{changeVolume('20')}" visible="false" useHandCursor="true" buttonMode="true" />
+	<mx:Image id="volume_2" source="@Embed(source='assets/skins/audioskin.swf', symbol='VolumeLevel2')" x="75" y="40" click="{changeVolume('40')}" visible="false" useHandCursor="true" buttonMode="true" />
+	<mx:Image id="volume_2Off" source="@Embed(source='assets/skins/audioskin.swf', symbol='VolumeLevel2Off')" x="75" y="40" click="{changeVolume('40')}" visible="false" useHandCursor="true" buttonMode="true" />
+	<mx:Image id="volume_3" source="@Embed(source='assets/skins/audioskin.swf', symbol='VolumeLevel3')" x="80" y="40" click="{changeVolume('50')}" visible="false" useHandCursor="true" buttonMode="true" />
+	<mx:Image id="volume_3Off" source="@Embed(source='assets/skins/audioskin.swf', symbol='VolumeLevel3OFF')" x="80" y="40" click="{changeVolume('50')}" visible="false" useHandCursor="true" buttonMode="true" />
+	<mx:Image id="volume_4" source="@Embed(source='assets/skins/audioskin.swf', symbol='VolumeLevel4')" x="85" y="40" click="{changeVolume('60')}" visible="false" useHandCursor="true" buttonMode="true" />
+	<mx:Image id="volume_4Off" source="@Embed(source='assets/skins/audioskin.swf', symbol='VolumeLevel4OFF')" x="85" y="40" click="{changeVolume('60')}" visible="false" useHandCursor="true" buttonMode="true" />
+	<mx:Image id="volume_5" source="@Embed(source='assets/skins/audioskin.swf', symbol='VolumeLevel5')" x="90" y="40" click="{changeVolume('80')}" visible="false" useHandCursor="true" buttonMode="true" />
+	<mx:Image id="volume_5Off" source="@Embed(source='assets/skins/audioskin.swf', symbol='VolumeLevel5OFF')" x="90" y="40" click="{changeVolume('80')}" visible="false" useHandCursor="true" buttonMode="true" /> 
+	<mx:Image id="volume_6" source="@Embed(source='assets/skins/audioskin.swf', symbol='VolumeLevel6')" x="95" y="40" click="{changeVolume('100')}" visible="false" useHandCursor="true" buttonMode="true" />
+	<mx:Image id="volume_6Off" source="@Embed(source='assets/skins/audioskin.swf', symbol='VolumeLevel6OFF')" x="95" y="40" click="{changeVolume('100')}" visible="false" useHandCursor="true" buttonMode="true" />
+ 		 	
+	<mx:Button id="pauseButton" styleName="pausebutton" x="23" y="20" useHandCursor="true" buttonMode="true" />
+	<mx:Button id="playButton" styleName="playbutton" x="23" y="20" useHandCursor="true" buttonMode="true" visible="false" />
+	
+ 
+	
+</mx:Canvas>

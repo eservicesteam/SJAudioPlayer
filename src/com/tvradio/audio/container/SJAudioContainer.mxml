@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Copyright 2011 SMARTJOG * TV-RADIO.
+ * Licensed under the MIT License (see LICENSE.txt)
+-->
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="515" height="241" 
+	xmlns:header="com.tvradio.audio.header.*" 
+	xmlns:footer="com.tvradio.audio.footer.*" 
+	xmlns:info="com.tvradio.audio.info.*" 
+	xmlns:control="com.tvradio.audio.control.*" 
+	xmlns:logo="com.tvradio.audio.logo.*"
+	xmlns:status="com.tvradio.audio.status.*"
+	xmlns:clock="com.tvradio.audio.clock.*">
+	
+	<mx:Script>
+		<![CDATA[
+				 
+			import com.tvradio.audio.event.LogoEffectEvent;
+			import com.hurlant.util.der.Integer;
+			import com.tvradio.audio.event.SoundEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.tvradio.utils.token.Token;
+			import com.tvradio.configuration.Configuration;
+			import mx.core.Application;
+			import mx.managers.CursorManager;	
+			
+			private var mySound:Sound = null;
+      		private var audio:SoundChannel = null;
+      		private var _volume:Number = 0.5; //Volume initialization
+			private var _mute:Boolean = false; //Mute initialization      		
+      		
+            private var soundLoaderContext:SoundLoaderContext; //soundLoaderContext
+			
+			/* Flashvars variables */			
+    		private var audioFile:String;
+    		private var audioTitle:String;
+    		private var audioDesc:String;
+    		private var withLogoEffect:Boolean=true;
+    		    		
+    		private var isTokenized:Boolean;
+    		private var tokenKey:TokenKey;
+    		private var tokenValue:String;
+    		private var preURL:String;    		
+			
+			private var CompanyLogo:String;
+			private var playerBackgroundColor:String;
+			
+			// TVR Analytics
+			private var tvr_genre:String;
+			private var tvr_name:String;
+			private var tvr_section1:String;
+			private var tvr_section2:String;
+			private var tvr_section3:String;
+			
+			[Embed(source="assets/images/sound.png")]
+      		[Bindable]
+      		public var soundIconCls:Class;
+
+    		[Embed(source="assets/images/mute.png")]
+      		[Bindable]
+      		public var muteIconCls:Class;
+			
+			public function initPlayer(configuration:Configuration):void {
+												
+				/**		 
+				 * Flashvars parameters value 
+				 **/		
+				this.checkFlashvars();
+				
+				/**		 
+				 * Initialization of player component  
+				 **/
+				this.initPlayerComponents(configuration);
+				
+											
+				
+				/**
+				 * Check tokenized configuration value
+				 **/
+				this.isTokenizedFile(configuration);						
+				
+												
+				sjAudioControl.visible = true;
+				sjAudioLogo.visible = true;
+				sjAudioFooter.visible = true;
+				sjAudioHeader.visible = true;
+				sjAudioInfo.visible = true;
+				
+				this.sjAudioControl.pauseButton.addEventListener(MouseEvent.CLICK, pauseHandler);
+				this.sjAudioControl.playButton.addEventListener(MouseEvent.CLICK, playHandler);				
+				
+				audioFile = audioFile+"?tvr_genre="+tvr_genre+"&tvr_name="+tvr_name+"&tvr_section1="+tvr_section1+"&tvr_section2="+tvr_section2+"&tvr_section3="+tvr_section3+"&"+Math.random();
+				
+				this.playSound(audioFile);
+				
+				CursorManager.removeBusyCursor();
+				Application.application.enabled = true;
+				
+			}
+			
+			private function initPlayerComponents(configuration:Configuration):void {
+				
+				this.addEventListener(LogoEffectEvent.PLAY_EFFECT, sjAudioLogo.launchEffectTimer);
+				
+				if(configuration!=null){
+					if(this.playerBackgroundColor!=null){
+						Application.application.setStyle("backgroundColor", this.playerBackgroundColor);
+					}
+					else{
+						Application.application.setStyle("backgroundColor", "0x132e72");
+					}
+					if(this.audioTitle!=null){
+						Application.application.sjAudioContainer.sjAudioInfo.sjAudioTitle.infoArtist.text = this.audioTitle;
+					}
+					if(this.audioDesc!=null){
+						Application.application.sjAudioContainer.sjAudioInfo.sjAudioTitle.infoTitle.text = this.audioDesc;
+					}
+					if(this.withLogoEffect==true){
+						this.dispatchEvent(new LogoEffectEvent(LogoEffectEvent.PLAY_EFFECT));												
+					}
+					if(this.CompanyLogo!=""){
+						this.sjAudioLogo.logo = this.CompanyLogo;
+					}
+					else{
+						this.sjAudioLogo.logo="assets/images/logo.png"; // if not logo on flashvar, choose the default tvr logo
+					}
+					if(configuration.clock == "yes"){
+						this.sjAudioClock.launchTimer();
+						this.sjAudioClock.visible = true;
+					}
+				}				
+			}
+						
+			
+			private function isTokenizedFile(configuration:Configuration):void {
+				if(configuration.token == "yes"){
+					tokenKey = new TokenKey();
+					this.preURL = configuration.preURL;
+					this.tokenValue = tokenKey.tokenValue;
+					isTokenized = true;					
+				}								
+			}
+			
+			private function checkFlashvars():void {		
+				this.audioFile = Application.application.parameters.audiofile; //Audio File parameter
+				this.audioTitle = Application.application.parameters.audiotitle; //Audio title parameter
+				this.audioDesc = Application.application.parameters.audiodesc; //Audio desc parameter
+				this.CompanyLogo = Application.application.parameters.logo; // CompanyLogo parameter
+				this.playerBackgroundColor = Application.application.parameters.bgcolor; // background color parameter
+				this.tvr_genre = Application.application.parameters.tvr_genre; // tvr_genre parameter
+				this.tvr_name = Application.application.parameters.tvr_name; // tvr_name parameter
+				this.tvr_section1 = Application.application.parameters.tvr_section1; // tvr_section1 parameter
+				this.tvr_section2 = Application.application.parameters.tvr_section2; // tvr_section2 parameter
+				this.tvr_section3 = Application.application.parameters.tvr_section3; // tvr_section3 parameter
+				
+				if(Application.application.parameters.withlogoeffect!=null){
+					if(Application.application.parameters.withlogoeffect=="false"){
+						this.withLogoEffect = false;	
+					}
+					if(Application.application.parameters.withlogoeffect=="true"){
+						this.withLogoEffect = true;	
+					}
+				}		        	
+			}
+			
+			/* Play function */ 
+			private function playSound(url:String):void {												
+				
+				this.addEventListener(SoundEvent.SOUND_VOLUME, sjAudioControl.onSoundVolumeHandler);
+				this.addEventListener(SoundEvent.TOGGLE_VOLUME, onToggleSoundHandler);
+				this.addEventListener(SoundEvent.CHANGE_VOLUME, onChangeVolumeHandler);
+				
+				SoundMixer.stopAll(); // Stop all soundMixer
+				if(null!=audio){
+					audio.stop(); // stop SoundChannel
+				}
+				if(null!=mySound){					
+					try {
+						mySound.close(); // Close Sound (clean streaming buffering)
+					} catch (error:IOError){
+						trace("No stream to close");
+					}	
+					
+				}
+				mySound = null;
+				audio = null;
+				 
+				soundLoaderContext = new SoundLoaderContext(1000, false); // Creation of a SoundLoaderContext						
+				soundLoaderContext.checkPolicyFile = true;
+				mySound = new Sound(); // Sound Object instance
+				mySound.addEventListener(ProgressEvent.PROGRESS, onLoadProgress);				
+				audio = new SoundChannel(); // SoundChannel (audio) instance							
+											
+				if(isTokenized==true){					
+					textService.addEventListener(ResultEvent.RESULT, playTokenizedFile);	
+					textService.send();					
+				} else {
+					mySound.load(new URLRequest(url), soundLoaderContext); // URL to stream loading		
+					mySound.addEventListener(IOErrorEvent.IO_ERROR, handleIOError);
+					mySound.addEventListener(HTTPStatusEvent.HTTP_STATUS, handleHttpStatus);
+					mySound.addEventListener(Event.OPEN, chargementDemarre);    			
+					mySound.addEventListener(Event.COMPLETE, chargementTermine);						
+					var st:SoundTransform = audio.soundTransform; // Addition of a SoundTransform to set the volume		
+					st.volume = this._mute ? 0 : _volume;						   			    	
+					audio = mySound.play(0,0,st); // Sound play
+					
+					
+					dispatchEvent(new SoundEvent(SoundEvent.SOUND_VOLUME,_volume.toString()));
+					
+					audio.addEventListener(Event.SOUND_COMPLETE, onPlaybackComplete); //listener to listen completed playback
+				}   				
+				 																		
+			}
+			
+			
+			
+			private function playTokenizedFile(event:ResultEvent):void {
+				
+				var serverDate:String = textService.lastResult.toString();
+				var token:Token = new Token();				
+				var url:String = token.generateTokenizedURL(this.tokenValue, this.preURL, this.audioFile, serverDate);
+				trace("URL : "+url);
+				mySound.load(new URLRequest(url), soundLoaderContext); // URL to stream loading		
+				mySound.addEventListener(IOErrorEvent.IO_ERROR, handleIOError);
+				mySound.addEventListener(HTTPStatusEvent.HTTP_STATUS, handleHttpStatus);
+				mySound.addEventListener(Event.OPEN, chargementDemarre);    			
+				mySound.addEventListener(Event.COMPLETE, chargementTermine);						
+				var st:SoundTransform = audio.soundTransform; // Addition of a SoundTransform to set the volume		
+				st.volume = this._mute ? 0 : _volume;						   			    	
+				audio = mySound.play(0,0,st);
+				
+			}
+								
+			
+			/* function to pause Live flow */
+			private function playHandler(event:MouseEvent):void{				
+				this.sjAudioControl.playButton.visible=false;
+				this.sjAudioControl.pauseButton.visible=true;
+				if(null!=audio){					
+					this.playSound(audioFile+"?var="+Math.random()); 
+				}
+			}
+			
+			/* function to pause Live flow */
+			private function pauseHandler(event:MouseEvent):void{				
+				this.sjAudioControl.pauseButton.visible=false;
+				this.sjAudioControl.playButton.visible=true;
+				mySound.removeEventListener(ProgressEvent.PROGRESS, onLoadProgress);
+				this.sjAudioStatus.setAudioStatus("play_pause");
+				if(null!=audio){															
+					audio.stop();					
+				}
+			}
+
+			private function onToggleSoundHandler(evt:SoundEvent):void {
+				if(evt.arg != null){
+					var st:SoundTransform;
+					st = audio.soundTransform;
+					switch (evt.arg){
+						case "mute":
+							if(audio != null){
+								this._mute = true;
+								st.volume = 0;
+								dispatchEvent(new SoundEvent(SoundEvent.SOUND_VOLUME, "0"));
+							}
+							break;
+						case "sound":
+							if(audio != null){
+								this._mute = false;
+								st.volume = _volume;
+								dispatchEvent(new SoundEvent(SoundEvent.SOUND_VOLUME, _volume.toString()));
+							}	
+							break;	
+						
+					}
+					audio.soundTransform = st;
+					trace("Toggle value : "+evt.arg);
+				}
+			}
+			
+			private function onChangeVolumeHandler(evt:SoundEvent):void {
+				
+				if(evt.arg != null){
+					
+					if(audio != null){
+						var st:SoundTransform = audio.soundTransform;
+						st.volume = new int(evt.arg)/100;
+						_volume = st.volume;
+						audio.soundTransform = st;
+						dispatchEvent(new SoundEvent(SoundEvent.SOUND_VOLUME, st.volume.toString()));												
+					}
+										
+				}
+				
+			}
+						
+			private  function onPlaybackComplete(event:Event):void{				
+				mySound.removeEventListener(ProgressEvent.PROGRESS, onLoadProgress);
+				this.sjAudioControl.pauseButton.visible=false;
+				this.sjAudioControl.playButton.visible=true;
+			    this.sjAudioStatus.setAudioStatus("play_stop");
+			    trace("The sound has finished playing");    				    
+			}			
+			
+			private function chargementDemarre(pEvt:Event):void {
+				this.sjAudioStatus.setAudioStatus("connect_success"); 
+				trace("Load starting..."); 
+			} 			
+			private function chargementEnCours(pEvt:ProgressEvent):void { 
+				trace("Loading... : " + pEvt.bytesLoaded + " / " + pEvt.bytesTotal ); 
+			} 
+			private function chargementTermine(pEvt:Event):void { 				
+				trace("Load ended!"); 
+			} 
+			private function erreurChargement(pEvt:IOErrorEvent):void {
+				this.sjAudioStatus.setAudioStatus("connect_failed"); 
+				trace("Loading error !"); 
+			}
+			
+			private function handleIOError(event:IOErrorEvent):void {				
+				trace("Stream URL lost : "+event.text);
+				this.sjAudioStatus.setAudioStatus("play_streamnotfound");							
+			}
+			
+			private function completeSound(Evt:Event):void {				
+				trace("Sound loaded !");
+			}
+			private function handleHttpStatus ( event:HTTPStatusEvent ):void {
+				this.sjAudioStatus.setAudioStatus("connect_failed");
+			    trace ("Load failed: HTTP Status = " + event.status );
+			}
+			private function onLoadProgress(event:ProgressEvent):void
+			{
+			    var loadedPct:uint =  Math.round(100 * (event.bytesLoaded / event.bytesTotal));
+			    		    
+			    this.sjAudioStatus.setAudioStatus("play_start");
+			}
+
+								
+		]]>
+	</mx:Script>	
+	
+	<mx:Image x="0" y="0" source="assets/skins/bgaudioplayer.png"/>
+	
+	<header:SJAudioHeader id="sjAudioHeader" x="27" y="20" visible="false"/>
+	<logo:SJAudioLogo id="sjAudioLogo" x="67" y="77" visible="false" />
+	<control:SJAudioControl id="sjAudioControl" x="65" y="160" visible="false" />	
+	<info:SJAudioInfo id="sjAudioInfo" x="211.9" y="10" visible="false" />
+	<clock:SJAudioClock id="sjAudioClock" x="440" y="27" visible="false" width="50" height="20" />
+	<status:SJAudioStatus id="sjAudioStatus" y="185" height="20" visible="true"  x="225" width="155"/>		
+	<footer:SJAudioFooter id="sjAudioFooter" x="390" y="185" height="20" visible="true"/>
+				
+	<mx:HTTPService id="textService" url="here_a_link_to_a_ntp_server_to_check_datetime"/>				
+	
+</mx:Canvas>

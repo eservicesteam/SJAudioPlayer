@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<player>
+	<playerType>compact</playerType>
+	<clock>yes</clock>
+	<token>no</token>
+	<category>live</category>
+	<preURL></preURL>
+	<timeSlot></timeSlot>	
+</player>

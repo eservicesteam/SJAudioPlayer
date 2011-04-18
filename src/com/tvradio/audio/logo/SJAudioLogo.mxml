@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Copyright 2011 SMARTJOG * TV-RADIO.
+ * Licensed under the MIT License (see LICENSE.txt)
+-->
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="110" height="75">
+	<mx:Script>
+		<![CDATA[
+			import com.tvradio.audio.event.LogoEffectEvent;
+			[Bindable]
+			public var logo:String;
+			private var timer:Timer;
+			
+			public function launchEffectTimer(event:LogoEffectEvent):void {
+				
+				timer = new Timer(5000);
+				timer.addEventListener(TimerEvent.TIMER, launchEffect);
+				timer.start();
+				
+			}	
+			
+			private function launchEffect(event:TimerEvent):void {
+				this.glowLogo.play();
+			}		
+			
+		]]>
+	</mx:Script>	
+	
+	<mx:Image id="imageLogo" source="{logo}" 		 
+        horizontalAlign="center" verticalAlign="middle"/>
+	<mx:Glow id="glowLogo" duration="1000" 
+        alphaFrom="0.8" alphaTo="0" 
+        blurXFrom="10.0" blurXTo="30.0" 
+        blurYFrom="10.0" blurYTo="30.0" 
+        color="0xcccccc" target="{imageLogo}"/>
+    
+</mx:Canvas>

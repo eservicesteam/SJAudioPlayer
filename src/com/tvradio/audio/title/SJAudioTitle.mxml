@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Copyright 2011 SMARTJOG * TV-RADIO.
+ * Licensed under the MIT License (see LICENSE.txt)
+-->
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="250" height="80">
+	
+	<mx:Label id="infoArtist" styleName="infobar" width="250" x="0" y="10"/>
+	<mx:Label id="infoTitle" styleName="infobar2" width="250" x="0" y="31"/>
+	
+</mx:Canvas>

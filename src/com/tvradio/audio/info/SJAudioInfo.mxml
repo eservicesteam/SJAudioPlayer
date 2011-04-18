@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Copyright 2011 SMARTJOG * TV-RADIO.
+ * Licensed under the MIT License (see LICENSE.txt)
+-->
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="270" height="215" 
+	xmlns:title="com.tvradio.audio.title.*"
+	xmlns:spectrum="com.tvradio.audio.spectrum.*">
+	<mx:Script>
+		<![CDATA[
+			/**
+			 * Changes music visualization type.
+			 */
+			public function toggleMusicVis():void
+			{
+				switch (musicVis.type){
+					case "line":musicVis.type = "wave"; break;
+					case "wave":musicVis.type = "bars"; break;
+					case "bars":musicVis.type = "line"; break;
+				}				
+				
+				musicVis.invalidateDisplayList();
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Image id="infoBGImage" 
+		source="@Embed(source='assets/skins/audioskin.swf', symbol='display')" 
+		x="3" y="0" 
+		width="267" height="215" />
+		
+		<mx:Canvas x="80" y="55" width="120" height="45" >
+			<spectrum:Visualization id="musicVis"
+					width="120" height="45"
+	 				useHandCursor="true" 
+	 				buttonMode="true"		 						
+			 		audioLineColor="#f72323" 
+			 		audioFillColor="#F60606"			 					 		 
+					type="bars" bars="12"				 
+					channel="stereo"
+					click="toggleMusicVis()"									 		
+					/>
+		</mx:Canvas>
+			
+		<title:SJAudioTitle id="sjAudioTitle" x="10" y="100" />
+	
+</mx:Canvas>

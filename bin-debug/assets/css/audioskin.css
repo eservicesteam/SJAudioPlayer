@@ -1,0 +1,83 @@
+/*
+ * Copyright 2011 SMARTJOG * TV-RADIO.
+ * Licensed under the MIT License (see LICENSE.txt)
+*/
+/* CSS file */
+Application {
+   /*backgroundColor: #252732;
+   backgroundGradientColors: #333646, #21242e;*/
+}
+
+    @font-face {
+        src: url("../skins/DINMittelschriftStd.otf");
+        fontFamily: Din;
+    }
+
+	.playbutton {
+		upSkin: Embed(source='../skins/audioskin.swf#PlayUp'); 
+		overSkin: Embed(source='../skins/audioskin.swf#PlayOver'); 
+		downSkin: Embed(source='../skins/audioskin.swf#PlayDown'); 
+  }
+  
+  	.pausebutton {
+		upSkin: Embed(source='../skins/audioskin.swf#PauseUp'); 
+		overSkin: Embed(source='../skins/audioskin.swf#PauseOver'); 
+		downSkin: Embed(source='../skins/audioskin.swf#PauseDown'); 
+  }
+  
+  
+	.logo {
+		backgroundImage: Embed(source='../skins/audioskin.swf#logotvr');
+ 
+
+  }
+
+  
+  .infobar {
+    font-family: Din;	
+    color:#FFFFFF;
+    font-size: 15;
+ 	text-Align: center;
+	advancedAntiAliasing: true;
+	/*fontSharpness: -400;*/
+	fontThickness: 100;
+}
+
+.infobar2 {
+    font-family: Din;	
+    color:#dfe892;
+    font-size: 12;
+	text-Align: center;
+	advancedAntiAliasing: true;
+	/*fontSharpness: -400;*/
+	fontThickness: 100;
+}
+
+.infobar3 {
+    font-family: Din;	
+    color:#cccccc;
+    font-size: 10;
+	text-Align: right;
+	advancedAntiAliasing: true;
+	fontSharpness: 400;
+	fontThickness: 0;
+}
+.infobar4 {
+    font-family: Din;	
+    color:#cccccc;
+    font-size: 8;
+	text-Align: center;
+	advancedAntiAliasing: true;
+	fontSharpness: 400;
+	fontThickness: 0;
+}
+
+.clock {
+    font-family: Din;	
+    color:#ffffff;
+    font-size: 12;
+	text-Align: center;
+	advancedAntiAliasing: true;
+	fontThickness: 100;
+}	
+	

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Copyright 2011 SMARTJOG * TV-RADIO.
+ * Licensed under the MIT License (see LICENSE.txt)
+-->
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="50" height="20">
+	<mx:Script>
+ 
+		<![CDATA[
+		
+			import mx.formatters.DateFormatter;
+			
+			[Bindable]
+		  	private var myDate:String = new String();
+			
+			public function launchTimer():void {
+				showTime();	            
+	            var ticker:Timer = new Timer(60000);	            	            
+	            ticker.addEventListener(TimerEvent.TIMER, onTick);	            	            
+	            ticker.start();				
+			}
+					
+			private function onTick(event:TimerEvent):void {	            
+				var myDate:String = showTime();
+			}
+				
+				
+			  /**
+		        * Displays the given Date/Time in that good old analog clock style.
+		        */
+		    public function showTime():String 
+		    {        	
+		        var time:Date = new Date();
+		        var dateFormatter:DateFormatter = new mx.formatters.DateFormatter();
+	            dateFormatter.formatString = "HH:NN";	        
+		        myDate = dateFormatter.format(time);	        
+		        return myDate;	    
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Label id="clock" styleName="clock" text="{myDate}"  x="0" y="0" height="20"/>
+	
+</mx:Canvas>

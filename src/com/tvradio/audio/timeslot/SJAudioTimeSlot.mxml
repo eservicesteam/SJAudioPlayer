@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Copyright 2011 SMARTJOG * TV-RADIO.
+ * Licensed under the MIT License (see LICENSE.txt)
+-->
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="515" height="241"
+	backgroundColor="#000000">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import mx.managers.CursorManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import com.tvradio.audio.event.TimeSlotEvent;
+			import com.tvradio.configuration.Configuration;
+			
+			[Bindable]
+			public var configuration:Configuration; 
+			
+			[Bindable]
+            private var infoflux:XMLList; //XML data
+            [Bindable]
+            private var infofluxTimeSlot:XMLList; //Time Slot XML data
+            
+            private var timeSlotTimer:Timer = new Timer(60000); // creates a new sixty-second Timer
+			
+			/* Time Slot checker function */
+			public function checkTimeSlot():void {								
+				
+				this.addEventListener(TimeSlotEvent.TIMESLOT_STATUS, onTimeSlotHandler);
+													
+				xmlTimeSlot.url = configuration.timeSlot+Math.random(); // HTTPService URL set					 				
+				try {
+			    	xmlTimeSlot.send(); // HTTPService connection to retrieve		            	
+			    } catch (error:IOError) {
+			    	throw new Error("Impossible to access to XML data : "+error); 	            
+			    } catch (error:Error) {
+			    	throw new Error("Impossible to retrieve XML data because : "+error); 
+			    }	
+			    this.launchTimeSlotTimer();				
+														
+			}
+			
+			private function launchTimeSlotTimer():void {
+				timeSlotTimer.addEventListener(TimerEvent.TIMER, verifyTimeSlot);
+				timeSlotTimer.start();
+			}
+			
+			private function verifyTimeSlot(event:TimerEvent):void { // verify player state value in XML time slot
+		
+				trace(event.target.currentCount+"--> Starting Call of xmlTimeSlot.Send()... at: "+new Date().toString());
+				xmlTimeSlot.url = configuration.timeSlot+Math.random(); // HTTPService URL set					 				
+				try {
+			    	xmlTimeSlot.send(); // HTTPService connection to retrieve		            	
+			    } catch (error:IOError) {
+			    	throw new Error("Impossible to access to XML data : "+error); 	            
+			    } catch (error:Error) {
+			    	throw new Error("Impossible to retrieve XML data because : "+error); 
+			    }	    
+			    
+			    trace(event.target.currentCount+"--> xmlTimeSlot.Send() called");
+			    			    
+			}
+			
+			private function onTimeSlotHandler(evt:TimeSlotEvent):void {
+				
+				if(evt.arg!=null){
+	  				if(evt.arg.toString()=="stop"){
+	  					CursorManager.removeBusyCursor();
+						Application.application.enabled = true;						
+	  					Application.application.sjAudioContainer.visible = false;	  					
+	  					Application.application.sjAudioTimeSlot.visible = true;
+	  				} else {	  					
+	  					if(Application.application.sjAudioContainer.visible == false){
+	  						Application.application.sjAudioContainer.visible = true;	  					
+	  						Application.application.sjAudioTimeSlot.visible = false;
+	  						Application.application.sjAudioContainer.initPlayer(configuration);	
+	  					}
+	  					
+	  				}		  				
+	  			}				
+				
+			}
+			
+			/* handle timeslot XML */
+			private function handleTimeSlotXML(event:ResultEvent):void //handle XML data 
+			{
+			    infofluxTimeSlot = event.result.playlist_entry as XMLList;                
+			    var itemNodes:XMLList = infofluxTimeSlot.children();
+			    var itemXML:XML = infofluxTimeSlot.children()[0];	    
+			    var playerState:String = infofluxTimeSlot.children()[0].toString();	    
+			    if(playStateAnalyzer(playerState)==false){
+			    	dispatchEvent(new TimeSlotEvent(TimeSlotEvent.TIMESLOT_STATUS,"stop",true));
+			    } else {
+			    	dispatchEvent(new TimeSlotEvent(TimeSlotEvent.TIMESLOT_STATUS,"start",true));
+			    }
+			    			    	
+			}
+			
+			/* Analyze playerState value */
+			private function playStateAnalyzer(value:String):Boolean {
+				
+				if(value=="start"){
+			    	return true;
+			    } else {
+			    	return false;
+			    }				
+			}			
+			
+			private function handleFault(event:FaultEvent):void //handle error during XML data handle
+			{               	
+			   	trace("Error during XML data handle : "+event);
+			}
+		]]>
+	</mx:Script>	
+	
+	<mx:Label text="Hors plage horaire" styleName="infobar"  x="203.5" y="108"/>
+	
+	<mx:HTTPService result="handleTimeSlotXML(event);" fault="handleFault(event);" id="xmlTimeSlot" resultFormat="e4x" useProxy="false" />
+	
+</mx:Canvas>

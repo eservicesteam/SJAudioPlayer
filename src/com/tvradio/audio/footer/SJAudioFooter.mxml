@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Copyright 2011 SMARTJOG * TV-RADIO.
+ * Licensed under the MIT License (see LICENSE.txt)
+-->
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100" height="20">
+		
+	<mx:Label id="playerVersion" text="TVR Audio Player v2.0" styleName="infobar4" width="100" x="0" y="0"/>
+</mx:Canvas>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Copyright 2011 SMARTJOG * TV-RADIO.
+ * Licensed under the MIT License (see LICENSE.txt)
+-->
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="155" height="20">
+	
+	<mx:Script>
+		<![CDATA[
+			public function setAudioStatus(value:String):void {
+	  			switch(value){
+	  				case "connect_success" :
+	  				    this.audioStatusImg.source = "assets/images/audio_connect.png";
+	  				    this.audioStatusLabel.text = "Connected";
+	  					break;
+	  				case "connect_failed" :
+	  				    this.audioStatusImg.source = "assets/images/audio_error.png";
+	  				    this.audioStatusLabel.text = "Connection failed";
+	  					break;	  				
+	  				case "play_start" :
+	  				    this.audioStatusImg.source = "assets/images/audio_play.png";
+	  				    this.audioStatusLabel.text = "Playing";
+	  					break;				  				
+	  				case "play_stop" :
+	  				    this.audioStatusImg.source = "assets/images/audio_stop.png";
+	  				    this.audioStatusLabel.text = "Stop";
+	  					break;
+	  				case "play_pause" :
+	  				    this.audioStatusImg.source = "assets/images/audio_stop.png";
+	  				    this.audioStatusLabel.text = "Pause";
+	  					break;	
+	  				case "play_failed" :
+	  				    this.audioStatusImg.source = "assets/images/audio_error.png";
+	  				    this.audioStatusLabel.text = "Failed";
+	  					break;
+	  				case "play_streamnotfound" :
+	  				    this.audioStatusImg.source = "assets/images/audio_error.png";
+	  				    this.audioStatusLabel.text = "Stream not found";
+	  					break;
+	  				case "seek_notify" :
+	  				    this.audioStatusImg.source = "assets/images/audio_seek.png";
+	  				    this.audioStatusLabel.text = "Seeking...";
+	  					break;				
+	  				case "seek_failed" :
+	  				    this.audioStatusImg.source = "assets/images/audio_error.png";
+	  				    this.audioStatusLabel.text = "Seek failed";
+	  					break;
+	  				case "seek_invalidTime" :
+	  				    this.audioStatusImg.source = "assets/images/audio_error.png";
+	  				    this.audioStatusLabel.text = "Seek error";
+	  					break;		
+	  				case "buffering" :
+	  				    this.audioStatusImg.source = "assets/images/audio_buffering.png";
+	  				    this.audioStatusLabel.text = "Buffering...";
+	  					break;	
+	  				default:
+	  					this.audioStatusImg.source = "assets/images/audio_connect.png";
+	  				    this.audioStatusLabel.text = "Connection";
+	  					break;	
+	  			}
+	  		}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Image id="audioStatusImg" source="" height="16" width="16" x="0"/>
+	<mx:Text id="audioStatusLabel" text="" x="18" styleName="infobar3"/>
+	
+</mx:Canvas>

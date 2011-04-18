@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Copyright 2011 SMARTJOG * TV-RADIO.
+ * Licensed under the MIT License (see LICENSE.txt)
+-->
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+	backgroundColor="#000000"
+	width="550" height="250"
+	xmlns:ns1="*"
+	xmlns:container="com.tvradio.audio.container.*"
+	xmlns:timeslot="com.tvradio.audio.timeslot.*"		
+	layout="absolute"
+	creationComplete="initPlayerConfiguration(event)" >
+
+	<mx:Script>
+		<![CDATA[
+			import com.tvradio.audio.event.TimeSlotEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+			import com.tvradio.configuration.Configuration;
+			import mx.core.Application;
+			import mx.managers.CursorManager;
+			
+			private var urlConf:String = "conf/conf.xml";
+			private var loader:URLLoader;
+			private var configuration:Configuration;
+			private var g_BaseURL:String;
+			
+			
+            [Bindable]
+            private var cm:ContextMenu;
+			
+			/** 	 
+			 * Player Configuration initialization
+			 **/
+			  private function initPlayerConfiguration(event:Event):void {
+										
+				if (getHostName()==true){
+					
+					initializeRightClick();
+										
+					CursorManager.setBusyCursor();
+					Application.application.enabled = false;
+					
+					loader = null;
+					loader = new URLLoader();
+					loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+					loader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+					loader.addEventListener(Event.COMPLETE, initializePlayerHandler);
+					try {
+						loader.load(new URLRequest(urlConf));	
+					} catch (error:Error){
+						trace("Error : impossible to load XML of player configuration: "+ error.toString());
+			 		}
+				}  
+										
+			}
+			
+			/**
+			 *  Check hostname url
+			 **/
+			private function getHostName():Boolean {
+			     
+			     g_BaseURL = Application.application.url;
+			     // Edit here to secure swf on your website
+			     var pattern1:RegExp = new RegExp(".*");
+			    
+			     if (pattern1.test(g_BaseURL) == false) {
+					this.sjAudioContainer.visible = false;	
+					return false;
+			     }
+			     else{
+			     	return true;
+			     }
+			     
+			}
+						
+			/** 	 
+			 * Player Configuration initialization handler 	
+			 **/
+			private function initializePlayerHandler(event:Event):void{
+				
+				var xml:XML = new XML(loader.data);
+				
+				/* Configuration Object instance */
+				configuration = new Configuration();		
+				/* Configuration Object populator */
+				configuration.initConfiguration(xml);
+				
+				if(configuration.timeSlot!=""){
+					this.sjAudioTimeSlot.configuration = configuration;
+					this.sjAudioTimeSlot.checkTimeSlot();					
+				} else {					
+					this.sjAudioContainer.visible = true;
+					this.sjAudioContainer.initPlayer(configuration);
+				}																												
+			}
+			
+			/* --------------- CONTEXT MENU  ------------------ */
+			
+			private function RightClick_Website(evt:ContextMenuEvent):void {
+	                navigateToURL(new URLRequest('http://www.TV-Radio.com'), '_blank');
+            }
+            
+			private function initializeRightClick():void{
+					
+				var Website:ContextMenuItem = new ContextMenuItem("Player TV-Radio.com");
+	            Website.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, RightClick_Website);
+	
+				cm = new ContextMenu();
+	            cm.hideBuiltInItems();
+	
+	            cm.customItems.push(Website);
+	
+				sjAudioContainer.contextMenu = cm;
+			}
+			/* ----------------------------------------------------------- */
+			
+			private function securityErrorHandler(e:SecurityErrorEvent):void{
+		    	trace ("Error during XML loading: "+ e.toString());
+			}
+			private function ioErrorHandler(e:IOErrorEvent):void{
+		    	trace ("Error during XML loading: "+ e.toString());
+			}										
+			
+		]]>
+	</mx:Script>
+
+	<mx:Style source="assets/css/audioskin.css" />
+	
+	<container:SJAudioContainer id="sjAudioContainer" x="15" y="5" visible="false"/>	
+	<timeslot:SJAudioTimeSlot id="sjAudioTimeSlot" x="15" y="5" visible="false" />	
+</mx:Application>
